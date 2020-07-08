@@ -1,3 +1,5 @@
+// Need to ignore cases where I have declined attending
+
 let now = new Date();
 let calendarId = 'primary';
 let advisorData = {};
@@ -5,7 +7,6 @@ advisorData.fullName = "Yoshi Akutsu";
 advisorData.position = "Client Planning Advisor";
 advisorData.phoneExtension = "709";
 advisorData.advisorEmail = "yoshi@collegeliftoff.com";
-advisorFolderId = "1Q_eXO663PGZHTxhkxVYmyAtgUw4A_o0T";
 
 function main() {
   let todaysEvents = getOneDaysEvents();
@@ -13,10 +14,20 @@ function main() {
   for (let i = 0; i < todaysEvents.length; i++) {
     let event = events[i];
     Logger.log(event.summary, event.hangoutLink, event.attendees, event.start, event.end);
-    if(event.summary.includes('angout')) {
+    
+    if(event.summary.includes('angout') && checkDeclined(event) == false) {
       draftEmail(event);
     }
   }
+}
+
+function checkDeclined(event) {
+  for (let j = 0; j < event.attendees.length; j++) {
+    if (event.attendees[j].email == "yoshi@collegeliftoff.org" && event.attendees[j].responseStatus == "declined") {
+      return true;
+    }
+  }
+  return false;
 }
 
 function militaryToTwelve(militaryHour, minutes) {
@@ -49,6 +60,9 @@ function prettifyDate(datetime) {
 function getEmails(attendees) {
   let stringifiedEmails = '';
   for (let i = 0; i < attendees.length; i++) {
+    if (attendees[i].email == "yoshi@collegeliftoff.org") {
+      continue;
+    }
     stringifiedEmails = stringifiedEmails + attendees[i].email;
     if (i != attendees.length) {
       stringifiedEmails = stringifiedEmails + ',';
