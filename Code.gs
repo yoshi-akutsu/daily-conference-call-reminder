@@ -1,5 +1,3 @@
-// Need to ignore cases where I have declined attending
-
 let now = new Date();
 let calendarId = 'primary';
 let advisorData = {};
@@ -12,11 +10,14 @@ function main() {
   let todaysEvents = getOneDaysEvents();
   let events = Calendar.Events.list(calendarId, {timeMin: now.toISOString(), orderBy: 'startTime', singleEvents: true, maxResults: todaysEvents.length}).items;
   for (let i = 0; i < todaysEvents.length; i++) {
-    let event = events[i];
-    Logger.log(event.summary, event.hangoutLink, event.attendees, event.start, event.end);
+    let event = events[i];    
+    if (event.attendees.length == 0) {
     
-    if(event.summary.includes('angout') && checkDeclined(event) == false) {
-      draftEmail(event);
+    }
+    else {
+      if(event.summary.includes('angout') && checkDeclined(event) == false) {
+        draftEmail(event);
+      }
     }
   }
 }
@@ -52,8 +53,7 @@ function prettifyDate(datetime) {
   let time = datetime.split("T")[1];
   let hourMinuteSecond = time.split("-")[0];
   let hour = hourMinuteSecond.split(":")[0];
-  let minute = hourMinuteSecond.split(":")[1];
-  
+  let minute = hourMinuteSecond.split(":")[1]; 
   return militaryToTwelve(hour, minute);
 }
 
@@ -83,7 +83,6 @@ function draftEmail(event) {
   template.startTime = prettifyDate(event.start.dateTime);
   template.endTime = prettifyDate(event.end.dateTime);
   template.advisor = advisorData;
-
   
   let message = template.evaluate().getContent();
   GmailApp.createDraft(getEmails(event.attendees), 'Link to the call', message, { htmlBody: message });
