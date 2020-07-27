@@ -8,6 +8,9 @@ advisorData.advisorEmail = "yoshi@collegeliftoff.com";
 
 function main() {
   let todaysEvents = getOneDaysEvents();
+  if (todaysEvents.length == 0) {
+    return;
+  }
   let events = Calendar.Events.list(calendarId, {timeMin: now.toISOString(), orderBy: 'startTime', singleEvents: true, maxResults: todaysEvents.length}).items;
   for (let i = 0; i < todaysEvents.length; i++) {
     let event = events[i];    
