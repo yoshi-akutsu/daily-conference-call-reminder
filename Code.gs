@@ -14,8 +14,8 @@ function main() {
   let events = Calendar.Events.list(calendarId, {timeMin: now.toISOString(), orderBy: 'startTime', singleEvents: true, maxResults: todaysEvents.length}).items;
   for (let i = 0; i < todaysEvents.length; i++) {
     let event = events[i];    
-    if (event.attendees.length == 0) {
-    
+    if (!event.attendees) {
+      continue;
     }
     else {
       if(event.summary.includes('angout') && checkDeclined(event) == false) {
